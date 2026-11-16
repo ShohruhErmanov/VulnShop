@@ -38,6 +38,8 @@ git push -u origin main
 | `PUBLIC_HOSTS` | `lab.sizningdomen.uz` | O‘z domeningiz. Hozircha domen bo‘lmasa, bo‘sh qoldiring — `*.onrender.com` avtomatik qo‘shiladi |
 | `JWT_SECRET` | avtomatik | Render o‘zi yaratadi |
 
+   > `LAB_ACCESS_CODE` va `INSTRUCTOR_PASSWORD` ni bo‘sh qoldirsangiz ham bo‘ladi: server ularni `JWT_SECRET` dan avtomatik hosil qiladi (har restartda bir xil) va **Logs** bo‘limida ko‘rsatadi — `LAB_ACCESS_CODE = sinf-…` va `INSTRUCTOR_PASSWORD = Inst#…` qatorlarini qidiring. O‘zingiz qiymat bersangiz, sizniki ishlatiladi.
+
 3. **Apply** → build 3–5 daqiqa davom etadi. Tayyor bo‘lgach `https://vulnshop-lab.onrender.com` kabi manzil chiqadi.
 
 Blueprint’siz qo‘lda: **New → Web Service** → repozitoriy → Runtime: **Docker** → Health Check Path: `/healthz` → yuqoridagi o‘zgaruvchilarni qo‘shing.

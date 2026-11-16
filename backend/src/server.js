@@ -29,6 +29,14 @@ async function main() {
     if (config.hosted) banner = `🔒 HOSTED CLASSROOM — sinf kodi darvozasi yoqilgan; domenlar: ${config.publicHosts.join(', ')}`;
     console.log(`[VulnShop] API http://${config.host}:${config.port}/api  (${config.db.dialect})`);
     console.log(`[VulnShop] ${banner}`);
+    const generated = Object.entries(config.generatedSecrets || {});
+    if (generated.length) {
+      console.log('[VulnShop] ─────────────────────────────────────────────────────────');
+      console.log('[VulnShop] Quyidagi qiymatlar JWT_SECRET dan avtomatik hosil qilindi (har restartda bir xil):');
+      for (const [k, v] of generated) console.log(`[VulnShop]   ${k} = ${v}`);
+      console.log('[VulnShop] O‘zgartirish uchun ularni Render → Environment bo‘limida o‘zingiz bering.');
+      console.log('[VulnShop] ─────────────────────────────────────────────────────────');
+    }
   });
 }
 

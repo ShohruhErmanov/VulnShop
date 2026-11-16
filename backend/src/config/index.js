@@ -23,8 +23,24 @@ const list = (v) => (v || '').split(',').map((s) => s.trim()).filter(Boolean);
 // Deployment: "local" (default, loopback only) or "hosted" (classroom server behind an access gate).
 const hosted = (env.LAB_DEPLOYMENT || 'local').toLowerCase() === 'hosted';
 const publicHosts = [...list(env.PUBLIC_HOSTS), ...list(env.RENDER_EXTERNAL_HOSTNAME)].map((h) => h.toLowerCase());
-const accessCode = env.LAB_ACCESS_CODE || '';
-const instructorPassword = env.INSTRUCTOR_PASSWORD || '';
+let accessCode = env.LAB_ACCESS_CODE || '';
+let instructorPassword = env.INSTRUCTOR_PASSWORD || '';
+const generatedSecrets = {};
+
+if (hosted && (env.JWT_SECRET || '').length >= 32) {
+  // Not set by the operator -> derive stable values from the platform-generated JWT_SECRET.
+  // Same value after every restart; unguessable without the secret; printed once in the
+  // (private) deploy log so the instructor can read them. Explicit env vars always win.
+  const derive = (label) => crypto.createHmac('sha256', env.JWT_SECRET).update(`vulnshop:${label}`).digest();
+  if (!accessCode) {
+    accessCode = `sinf-${derive('access-code').toString('hex').slice(0, 10)}`;
+    generatedSecrets.LAB_ACCESS_CODE = accessCode;
+  }
+  if (!instructorPassword) {
+    instructorPassword = `Inst#${derive('instructor').toString('base64url').slice(0, 16)}7a`;
+    generatedSecrets.INSTRUCTOR_PASSWORD = instructorPassword;
+  }
+}
 
 if (hosted) {
   // SAFETY: a hosted lab must be gated and bound to known domains — refuse to start otherwise.
@@ -41,6 +57,7 @@ module.exports = {
   publicHosts,
   accessCode,
   instructorPassword,
+  generatedSecrets,
   frontendDist: env.FRONTEND_DIST ? path.resolve(env.FRONTEND_DIST) : path.resolve(__dirname, '../../public'),
   apiRateLimit: Number(env.API_RATE_LIMIT || (hosted ? 3000 : 600)),
   nodeEnv,
