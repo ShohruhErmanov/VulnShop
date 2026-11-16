@@ -1,0 +1,4 @@
+VULNSHOP INTERNAL - DO NOT DISTRIBUTE
+=====================================
+You escaped the documents/ directory.
+FLAG: VULNSHOP{d0t_d0t_sl4sh_3sc4p3}

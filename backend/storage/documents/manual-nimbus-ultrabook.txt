@@ -1,0 +1,6 @@
+Nimbus 14 Ultrabook - Tezkor boshlash
+=====================================
+1. Zaryadlovchini ulang va qopqoqni oching - noutbuk avtomatik yoqiladi.
+2. Tizimni sozlash ustasini bajaring.
+3. BIOS: yoqishda F2. Batareya rejimlari: Fn+Q.
+Kafolat: 12 oy.

@@ -1,0 +1,5 @@
+Glide Mechanical Keyboard - Qo'llanma
+======================================
+- Fn+1/2/3: Bluetooth qurilmalar orasida almashish.
+- Fn+4: 2.4 GHz simsiz rejim.
+- Switchlarni almashtirish uchun to'plamdagi tortgichdan foydalaning.

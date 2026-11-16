@@ -1,0 +1,65 @@
+# VulnShop — local security lab.
+# SAFETY: every published port is bound to 127.0.0.1 only; the database has no published port
+# and lives on an internal network with no outbound internet access.
+name: vulnshop
+
+services:
+  db:
+    image: mysql:8.0
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: vulnshop
+      MYSQL_USER: vulnshop
+      MYSQL_PASSWORD: vulnshop_lab_password        # synthetic lab-only credential
+      MYSQL_ROOT_PASSWORD: vulnshop_lab_root_password
+    volumes:
+      - db_data:/var/lib/mysql
+    networks: [internal]
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-uvulnshop", "-pvulnshop_lab_password"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+
+  backend:
+    build: ./backend
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      APP_MODE: ${APP_MODE:-lab}            # set APP_MODE=production to force every lab secure
+      NODE_ENV: development
+      DB_DIALECT: mysql
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_NAME: vulnshop
+      DB_USER: vulnshop
+      DB_PASSWORD: vulnshop_lab_password
+      JWT_SECRET: ${JWT_SECRET:-}
+      CORS_ORIGINS: http://localhost:${FRONTEND_PORT:-8080},http://127.0.0.1:${FRONTEND_PORT:-8080}
+    networks: [internal, web]
+    ports:
+      - "127.0.0.1:4000:4000"               # direct API access for Burp/Postman — loopback only
+    read_only: true                         # whole container FS (incl. /app/storage) is read-only
+    tmpfs: [/tmp]
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+
+  frontend:
+    build: ./frontend
+    restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks: [web]
+    ports:
+      - "127.0.0.1:${FRONTEND_PORT:-8080}:80"   # open http://localhost:8080 (or FRONTEND_PORT)
+
+networks:
+  internal:
+    internal: true                          # no internet egress for db/backend
+  web: {}
+
+volumes:
+  db_data:                                  # persistent MySQL data (docker compose down -v to reset)

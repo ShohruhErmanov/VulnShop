@@ -1,0 +1,19 @@
+# Render Blueprint — VulnShop hosted classroom lab.
+# Render dashboard -> New -> Blueprint -> choose this repository.
+services:
+  - type: web
+    name: vulnshop-lab
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    plan: free                      # free: data resets on every restart/redeploy (see docs/DEPLOY_RENDER.md)
+    healthCheckPath: /healthz
+    autoDeploy: false
+    envVars:
+      - key: LAB_ACCESS_CODE        # class code you give to students (min 10 chars)
+        sync: false
+      - key: INSTRUCTOR_PASSWORD    # password for admin@vulnshop.local (min 12 chars, keep secret)
+        sync: false
+      - key: PUBLIC_HOSTS           # your custom domain, e.g. lab.example.uz (the onrender.com host is added automatically)
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
